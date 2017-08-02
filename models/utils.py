@@ -87,5 +87,5 @@ def categorize_events(events, url_categories):
     events_category = pd.merge(events, m, left_on='url', right_on='event_url')
     events_category = events_category.append(pd.merge(events, fix_me[fix_me.match==1],left_on='url', right_on='event_url' ))
 
-    print 'match rate: {}%'.format(round(len(events_category)/len(events),2)*100)
+    #print 'match rate: {}%'.format(round(len(events_category)/len(events),2)*100)
     return events_category
