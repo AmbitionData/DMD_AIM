@@ -7,14 +7,9 @@ def load_data(event_categories = False):
     visitors = pd.read_csv('../data/visitors.csv')
     events = pd.read_csv('../data/web_events.csv', parse_dates=['timestamp'])
     devices = pd.read_csv('../data/machine_fingerprints.csv')
-    url_categories = pd.read_csv('../data/disease_mapping_cbg_newURLs.csv')
+    url_categories = pd.read_csv('../data/url_categories_merged_20170814.csv')
 
     # cleanup
-    if len(url_categories.columns) > 6:
-        url_categories = url_categories[url_categories.columns[:6]]
-    url_categories.columns = ['url', 'site_category', 'site_sub_category', 'disease_category', 'disease', 'pharma_firm']
-    url_categories = url_categories.dropna(subset=['url'])
-
     visitors.columns = [x.strip() for x in visitors.columns]
     events.columns = [x.strip() for x in events.columns]
     events = events.rename(columns={'Unnamed: 0':'event_id'})
