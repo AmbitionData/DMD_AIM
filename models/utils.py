@@ -7,13 +7,16 @@ def load_data(event_categories = False):
     visitors = pd.read_csv('../data/visitors.csv')
     events = pd.read_csv('../data/web_events.csv', parse_dates=['timestamp'])
     devices = pd.read_csv('../data/machine_fingerprints.csv')
-    url_categories = pd.read_csv('../data/url_categories_merged_20170814.csv')
+    url_categories = pd.read_csv('../data/url_categories_final_20170822.csv')
 
     # cleanup
     visitors.columns = [x.strip() for x in visitors.columns]
     events.columns = [x.strip() for x in events.columns]
     events = events.rename(columns={'Unnamed: 0':'event_id'})
     visitors = visitors.rename(columns={'Unnamed: 0': 'visitor_id'})
+
+    # add id to url_categories
+    url_categories['url_category_id'] = range(len(url_categories))
 
     # exclude bots
     bot_dgids = set(visitors[visitors.suspected_bot == 'Y'].dg_id)
