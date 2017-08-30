@@ -1,13 +1,20 @@
 
 from __future__ import division
 
-def load_data(event_categories = False):
+# define paths to files
+path_to_visitors = '../data/visitors.csv'
+path_to_events = '../data/web_events.csv'
+path_to_devices = '../data/machine_fingerprints.csv'
+path_to_url_categories = '../data/url_categories_final_20170822.csv'
+path_to_unknowns = '../data/unqualified_traffic_summary.csv'
+
+def load_data(event_categories=False):
     import pandas as pd
     # load
-    visitors = pd.read_csv('../data/visitors.csv')
-    events = pd.read_csv('../data/web_events.csv', parse_dates=['timestamp'])
-    devices = pd.read_csv('../data/machine_fingerprints.csv')
-    url_categories = pd.read_csv('../data/url_categories_final_20170822.csv')
+    visitors = pd.read_csv(path_to_visitors)
+    events = pd.read_csv(path_to_events, parse_dates=['timestamp'])
+    devices = pd.read_csv(path_to_devices)
+    url_categories = pd.read_csv(path_to_url_categories)
 
     # cleanup
     visitors.columns = [x.strip() for x in visitors.columns]
@@ -50,7 +57,13 @@ def clean_url(url, strip=False):
 
     if strip:
         if 'hcp' in re.split('[^a-zA-Z]', url):
-            url = url.split('.')[0] + '/hcp'
+            # 2 special cases with hcp (ug)
+            if 'yervoy' in url:
+                url = 'yervoy/hcp'
+            elif 'cabometyx' in url:
+                url = 'cabometyx/hcp'
+            else:
+                url = url.split('.')[0] + '/hcp'
         url = url.split('.')[0]
     return url.strip()
 
