@@ -1,3 +1,5 @@
+from __future__ import division
+
 import pandas as pd
 import utils
 import datetime
@@ -6,7 +8,7 @@ from personas import get_personas
 
 def get_quarters(dt):
     """
-    Map dates to quarter
+    Map dates to quarter (this is weird and specific, need to generalize)
 
     :param datetime dt: timestamp with date extracted
     """
@@ -56,17 +58,24 @@ def get_use_case(events, three=True):
     return events
 
 
-def aggregate_sessions(output_file=None, use_case_truncated=True, personas=True):
+def aggregate_sessions(visitors=None,
+                       events=None,
+                       output_file=None,
+                       use_case_truncated=True,
+                       personas=True):
     """
     Group events data by sessions, tag use_cases, extract personas if desired
 
+    :param df visitors: visitors data, if not initialized will load from raw data
+    :param df events: events data, if not initlalized will load from raw data
     :param str output_file: optional, filepath if writing to tableau
     :param boolean use_case_truncated: True if exracting personas, False if wanting more use cases
     :param boolean personas: True if wanting personas, False if not
     """
 
-    # load data
-    visitors, events, devices, url_categories = utils.load_data(event_categories=True)
+    if visitors is None or events is None:
+        # load data
+        visitors, events, devices, url_categories = utils.load_data(event_categories=True)
 
     ev = get_use_case(events, three=use_case_truncated)
     ev['quarter'] = ev.timestamp.apply(lambda x: get_quarters(x.date()))
@@ -84,7 +93,7 @@ def aggregate_sessions(output_file=None, use_case_truncated=True, personas=True)
         event_sessions = pd.merge(event_sessions, personas[['dg_id', 'persona']], on='dg_id')
         tableau_cols.append('persona')
 
-    if output_file:
+    if output_file is not None:
         tableau_sessions = event_sessions[tableau_cols]
         tableau_sessions.to_csv(output_file, index=False)
 
@@ -172,12 +181,12 @@ def npi_level_summary_statistics(output_file=None, npis=None, personas=True):
     tableau_columns += [x for x in v.columns if 'frequency' in x]
 
     if personas:
-        event_sessions = aggregate_sessions(ev, use_case_truncated=True)
-        personas = get_personas(event_sessions, visitors)
+        event_sessions = aggregate_sessions(v, ev, use_case_truncated=True)
+        personas = get_personas(event_sessions, v)
         v = pd.merge(v, personas[['dg_id', 'persona']], on='dg_id', how='left')
         tableau_columns.append('persona')
 
-    if output_file:
+    if output_file is not None:
         v[tableau_columns].to_csv(output_file, index=False)
 
     return v[tableau_columns]
