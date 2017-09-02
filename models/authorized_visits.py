@@ -49,14 +49,15 @@ def aggregate_pharma_activity(visitors, events, url_categories):
     return pharma_activity
 
 
-def monthly_aut_overall(output_file=None):
+def monthly_aut_overall(visitors=None, events=None, url_categories=None, output_file=None):
     """
     For each pharma company, calculate the number of authenticated sessions vs total sessions per month
 
     :param str output_file: specify if df is to be written to csv for tableau
     """
-    # load data
-    visitors, events, devices, url_categories = utils.load_data(event_categories=True)
+    if visitors is None or events is None or url_categories is None:
+        # load data
+        visitors, events, devices, url_categories = utils.load_data(event_categories=True)
     unkd = process_unknowns(utils.path_to_unknowns)
 
     pharma_activity = aggregate_pharma_activity(visitors, events, url_categories)
