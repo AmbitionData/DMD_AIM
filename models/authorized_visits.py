@@ -29,6 +29,10 @@ def aggregate_pharma_activity(visitors, events, url_categories):
     """
     Aggregate pharma web sessions by url and category
     Determines how many authorized sessions occurred at that url on each date
+
+    :param df visitors: visitors data
+    :param df events: events data
+    :param df url_categories: url categories provided by DMD
     """
 
     # bring in visitors, determine if authorized
@@ -45,9 +49,15 @@ def aggregate_pharma_activity(visitors, events, url_categories):
     return pharma_activity
 
 
-def monthly_aut_overall(join_to_urls=False, output_file=None):
-    # load data
-    visitors, events, devices, url_categories = utils.load_data(event_categories=True)
+def monthly_aut_overall(visitors=None, events=None, url_categories=None, output_file=None):
+    """
+    For each pharma company, calculate the number of authenticated sessions vs total sessions per month
+
+    :param str output_file: specify if df is to be written to csv for tableau
+    """
+    if visitors is None or events is None or url_categories is None:
+        # load data
+        visitors, events, devices, url_categories = utils.load_data(event_categories=True)
     unkd = process_unknowns(utils.path_to_unknowns)
 
     pharma_activity = aggregate_pharma_activity(visitors, events, url_categories)
@@ -67,9 +77,8 @@ def monthly_aut_overall(join_to_urls=False, output_file=None):
                                                                          'identified_visits',
                                                                          'unk_sessions',
                                                                          'total_visits']].sum().reset_index()
-    if join_to_urls:
-        pharma_merged = pd.merge(url_categories, pharma_merged, on='url_category_id')
-        pharma_merged['pct_authorized'] = pharma_merged.apply(lambda x: x.authorized_visits / x.total_visits, axis=1)
+    pharma_merged = pd.merge(url_categories, pharma_merged, on='url_category_id')
+    pharma_merged['pct_authorized'] = pharma_merged.apply(lambda x: x.authorized_visits / x.total_visits, axis=1)
 
     if output_file:
         pharma_merged.to_csv(output_file, index=False)

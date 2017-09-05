@@ -30,7 +30,7 @@ def coordinates_to_persona(x, y):
         return 'cat?'
 
 
-def get_personas(event_sessions, visitors, output_file=None):
+def get_personas(event_sessions=None, visitors=None, output_file=None):
     """
     Group session use cases into personas
 
