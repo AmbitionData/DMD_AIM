@@ -2,8 +2,8 @@
 from __future__ import division
 
 # define paths to files
-path_to_visitors = '../data/visitors.csv'
-path_to_events = '../data/web_events.csv'
+path_to_visitors = '../data/visitors_20170925.csv'
+path_to_events = '../data/web_events_20170925.csv'
 path_to_devices = '../data/machine_fingerprints.csv'
 path_to_url_categories = '../data/url_categories_final_20170822.csv'
 path_to_unknowns = '../data/unqualified_traffic_summary.csv'
@@ -20,12 +20,15 @@ def load_data(event_categories=False):
     visitors.columns = [x.strip() for x in visitors.columns]
     events.columns = [x.strip() for x in events.columns]
     events = events.rename(columns={'Unnamed: 0':'event_id'})
+    if 'event_id' not in events.columns:
+        events['event_id'] = range(len(events))
     visitors = visitors.rename(columns={'Unnamed: 0': 'visitor_id'})
 
     # add id to url_categories
     url_categories['url_category_id'] = range(len(url_categories))
 
     # exclude bots
+    visitors['suspected_bot'] = 'N'
     bot_dgids = set(visitors[visitors.suspected_bot == 'Y'].dg_id)
     events = events[~events.dg_id.isin(bot_dgids)]
 
