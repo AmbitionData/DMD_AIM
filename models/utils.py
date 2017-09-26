@@ -28,7 +28,8 @@ def load_data(event_categories=False):
     url_categories['url_category_id'] = range(len(url_categories))
 
     # exclude bots
-    visitors['suspected_bot'] = 'N'
+    if 'suspected_bot' not in visitors.columns:
+        visitors['suspected_bot'] = 'N'
     bot_dgids = set(visitors[visitors.suspected_bot == 'Y'].dg_id)
     events = events[~events.dg_id.isin(bot_dgids)]
 
