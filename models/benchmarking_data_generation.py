@@ -16,6 +16,8 @@ def get_quarters(dt):
         return 'q1'
     elif dt < datetime.date(2017, 8, 1):
         return 'q2'
+    else:
+        return 'q3'
 
 
 def categorize_frequency(n):
